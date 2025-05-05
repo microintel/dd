@@ -1,1 +1,97 @@
 
+<html>
+<head>
+<link rel="manifest" href="manifest.json" />
+
+  <title> Dead DCET</title>
+  <style>
+  
+  *{ font-family: 'Fake Receipt', sans-serif !important;
+  }
+    body {
+      margin: 0;
+      background-color: #121212;
+      color:white;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+    }
+
+    .header {
+      position: absolute;
+      top: 30px;
+      display: flex;
+      flex-direction:column;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+    }
+
+    .title {
+      font-size: 28px;
+      font-weight: bold;
+      color:white;
+    }
+
+    .timer {
+      font-size: 48px;
+      font-weight: bold;
+      letter-spacing: 2px;
+      padding: 20px 40px;
+      border-radius: 15px;
+    }
+
+    @media (max-width: 480px) {
+      .timer {
+        font-size: 32px;
+        padding: 15px 25px;
+      }
+      .title {
+        font-size: 18px;
+      }
+    }
+  </style>
+  <link href="https://fonts.cdnfonts.com/css/fake-receipt" rel="stylesheet">
+</head>
+<body>
+
+  <div class="header">
+    <img width="60%" src="https://raw.githubusercontent.com/microintel/endgram/main/photo/microintel-black-small.png">
+    <div class="title"> DEAD DCET</div>
+  </div>
+
+  <div class="timer" id="timer">00:00:00:000</div>
+
+  <script>
+    const targetDate = new Date('2025-05-30T00:00:00');
+
+    function pad(n, length) {
+      return n.toString().padStart(length, '0');
+    }
+
+    function updateTimer() {
+      const now = new Date();
+      const diff = Math.abs(now - targetDate);
+
+      const ms = diff % 1000;
+      const s = Math.floor(diff / 1000) % 60;
+      const m = Math.floor(diff / (1000 * 60)) % 60;
+      const h = Math.floor(diff / (1000 * 60 * 60));
+
+      document.getElementById('timer').textContent = `${pad(h, 2)}:${pad(m, 2)}:${pad(s, 2)}:${pad(ms, 3)}`;
+    }
+
+    setInterval(updateTimer, 1);
+  </script>
+
+</body>
+</html>
