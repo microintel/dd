@@ -1,97 +1,204 @@
-
+<!DOCTYPE html>
 <html>
 <head>
-<link rel="manifest" href="manifest.json" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title> Dead DCET</title>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DCET</title>
+  <link href="https://fonts.cdnfonts.com/css/fake-receipt" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dayjs@1/plugin/duration.js"></script>
   <style>
-  
-  *{ font-family: 'Fake Receipt', sans-serif !important;
-  }
+    * { font-family: 'Fake Receipt', sans-serif !important; color:white;}
     body {
       margin: 0;
-      background-color: #121212;
-      color:white;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #121212;
+      color: white;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: space-evenly;
       height: 100vh;
       text-align: center;
     }
-
-    .header {
-      position: absolute;
-      top: 30px;
-      display: flex;
-      flex-direction:column;
-      align-items: center;
-      gap: 15px;
+    .h { position: absolute; bottom: 30px; display: flex; flex-direction: column; align-items: center; gap: 15px; }
+    .t { font-size: 28px; font-weight: bold; }
+    .c { text-align:center;font-size: 30px; font-weight: bold; letter-spacing: 2px; padding: 20px 40px; border-radius: 15px; width:100%;overflow-x:auto;}
+    .d {  font-size: 12px; color: white;height:30vh;overflow-y:auto;}
+    .a{  height:70vh; display: flex;flex-direction:column;  font-size: 24px; color: #ccc; width:90%; justify-content:space-between; align-items:space-between;}
+    .a div {
+    display:flex;
+    justify-content:space-around;
+    align-items:center;
+    margin:0px;padding:0px;
     }
-
-    .logo {
-      width: 40px;
-      height: 40px;
-      border-radius: 8px;
+    .fd{
+    display:flex;
+    font-size:20px;
+    margin:0px;padding:0px;
+    flex-direction:column;
     }
-
-    .title {
-      font-size: 28px;
-      font-weight: bold;
-      color:white;
+    
+    .d{
+    font-size:20px;
     }
-
-    .timer {
-      font-size: 48px;
-      font-weight: bold;
-      letter-spacing: 2px;
-      padding: 20px 40px;
-      border-radius: 15px;
-    }
-
+    
+    .a i:hover { color: white; }
     @media (max-width: 480px) {
-      .timer {
-        font-size: 32px;
-        padding: 15px 25px;
-      }
-      .title {
-        font-size: 18px;
-      }
+      .c { font-size: 27px; padding: 15px 25px; }
+      .t { font-size: 18px; }
+    }
+    
+    #hi{
+    position:absolute;
+    top:20px;
+    }
+    i{
+    color:white;
+    }
+    .swal2-input{
+    width:80%;
+    }
+    
+    p{
+    padding:0px;
+    margin:0px;
     }
   </style>
-  <link href="https://fonts.cdnfonts.com/css/fake-receipt" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
 </head>
 <body>
 
-  <div class="header">
-    <img width="60%" src="https://raw.githubusercontent.com/microintel/endgram/main/photo/microintel-black-small.png">
-    <div class="title"> DEAD DCET</div>
+<div class="h">
+  <img width="24%" src="https://raw.githubusercontent.com/microintel/endgram/main/photo/microintel-black-small.png">
+  
+</div>
+
+<img id="hi" width="60%" src="not.png">
+
+
+<div class="a">
+<div>
+  <i class="bi bi-plus-circle" onclick="inp()"></i>
+  <i class="bi bi-pencil-square" onclick="edt()"></i>
+  <p class="dh" id="n"></p>
   </div>
+  <div class="c" id="ct">00:00:00:000</div>
+  
+  <div class="fd">
+  
+  <p class="d" id="ds"></p>
+  </div>
+  
+  
+</div>
 
-  <div class="timer" id="timer">00:00:00:000</div>
 
-  <script>
-    const targetDate = new Date('2025-05-30T00:00:00');
 
-    function pad(n, length) {
-      return n.toString().padStart(length, '0');
-    }
+<script>
+  dayjs.extend(dayjs_plugin_duration);
 
-    function updateTimer() {
-      const now = new Date();
-      const diff = Math.abs(now - targetDate);
+  let td = null, db;
+  const dn = 'dctDBB', sn = 'cd';
 
-      const ms = diff % 1000;
-      const s = Math.floor(diff / 1000) % 60;
-      const m = Math.floor(diff / (1000 * 60)) % 60;
-      const h = Math.floor(diff / (1000 * 60 * 60));
+  const idb = indexedDB.open(dn, 1);
+  idb.onupgradeneeded = e => e.target.result.createObjectStore(sn, { keyPath: 'id' });
+  idb.onsuccess = e => {
+    db = e.target.result;
+    const tx = db.transaction(sn, 'readonly').objectStore(sn).get(1);
+    tx.onsuccess = e => e.target.result ? ap(e.target.result) : inp();
+  };
 
-      document.getElementById('timer').textContent = `${pad(h, 2)}:${pad(m, 2)}:${pad(s, 2)}:${pad(ms, 3)}`;
-    }
+  function st(v) {
+    const t = db.transaction(sn, 'readwrite').objectStore(sn);
+    t.put({ id: 1, ...v });
+  }
 
-    setInterval(updateTimer, 1);
-  </script>
+  function ap(n, d, s) {
+    if (typeof n === 'object') { s = n.description; d = n.date; n = n.name; }
+    td = dayjs(d);
+    document.getElementById('n').textContent = n;
+    document.getElementById('ds').textContent = s;
+  }
+
+  function pad(n, l) {
+    return n.toString().padStart(l, '0');
+  }
+
+  function upt() {
+  if (!td) return;
+  const now = dayjs();
+  const diff = td.diff(now);
+  
+  if (diff <= 0) {
+  document.getElementById('ct').textContent = "00:00:00:000";
+  clearInterval(interval);
+  return;
+  }
+  
+  const d = dayjs.duration(diff);
+  const totalDays = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = pad(d.hours(), 2);
+  const minutes = pad(d.minutes(), 2);
+  const seconds = pad(d.seconds(), 2);
+  const milliseconds = pad(d.milliseconds(), 3);
+  
+  document.getElementById('ct').textContent = `${pad(totalDays, 2)}:${hours}:${minutes}:${seconds}:${milliseconds}`;
+  }
+
+  function inp() {
+    Swal.fire({
+      title: 'Add',
+      html: '<input id="n1" class="swal2-input" placeholder="Name">' +
+            '<input id="d1" type="datetime-local" class="swal2-input">' +
+            '<input id="s1" class="swal2-input" placeholder="Description">',
+      confirmButtonText: 'Start',
+      showCloseButton:true,
+      preConfirm: () => {
+        const n = document.getElementById('n1').value;
+        const d = document.getElementById('d1').value;
+        const s = document.getElementById('s1').value;
+        if (!n || !d) return Swal.showValidationMessage('Required'); 
+        return { name: n, date: d, description: s };
+      }
+    }).then(r => {
+      if (r.isConfirmed) {
+        st(r.value);
+        ap(r.value);
+      }
+    });
+  }
+
+  function edt() {
+    const t = db.transaction(sn, 'readonly').objectStore(sn).get(1);
+    t.onsuccess = e => {
+      const d = e.target.result || {};
+      Swal.fire({
+        title: 'Edit',
+        html: `<input id="n1" class="swal2-input" value="${d.name || ''}">` +
+              `<input id="d1" type="datetime-local" class="swal2-input" value="${d.date || ''}">` +
+              `<input id="s1" class="swal2-input" value="${d.description || ''}">`,
+        confirmButtonText: 'Update',
+        showCloseButton:true,
+        preConfirm: () => {
+          const n = document.getElementById('n1').value;
+          const da = document.getElementById('d1').value;
+          const s = document.getElementById('s1').value;
+          if (!n || !da) return Swal.showValidationMessage('Required');
+          return { name: n, date: da, description: s };
+        }
+      }).then(r => {
+        if (r.isConfirmed) {
+          st(r.value);
+          ap(r.value);
+        }
+      });
+    };
+  }
+
+  const interval = setInterval(upt, 1);
+</script>
 
 </body>
 </html>
